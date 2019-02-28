@@ -8,7 +8,7 @@ class ECPoint():
         self.inf = inf
 
     def __eq__(self, other):
-        if self.inf == other.inf:
+        if (self.inf == 1) and (other.inf == 1):
             return True
 
         return (self.x == other.x) and (self.y == other.y)
@@ -17,6 +17,9 @@ class ECPoint():
         if self.inf == 1:
             return 'O'
         return '({}, {})'.format(self.x, self.y)
+
+    def __hash__(self):
+        return hash(str(self))
 
 
 class EllipticCurve():
@@ -59,9 +62,12 @@ class EllipticCurve():
         if p1.x != p2.x:
             lam = ((p2.y - p1.y) * self.modinv((p2.x - p1.x) % self.p, self.p)) % self.p
         else:
-            if (p1.y == 0 or p2.y == 0) or (p2 == self.neg(p1)):
+            if (p1 == self.neg(p2)):
                 return ECPoint(0, 0, 1)
-
+            if (p1.y == 0):
+                return ECPoint(0, 0, 1)
+            
+            # point doubling
             lam = ((3*p1.x**2 + self.a) * self.modinv(2 * p1.y, self.p)) % self.p
 
 
@@ -70,6 +76,7 @@ class EllipticCurve():
         return ECPoint(x3, y3)
 
     def neg(self, p):
+        """ Calculate the additive inverse of a point P1, -P1. """
         return ECPoint(p.x, self.p - p.y)
 
     def sub(self, p1, p2):
