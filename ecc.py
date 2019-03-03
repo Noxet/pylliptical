@@ -82,3 +82,11 @@ class EllipticCurve():
     def sub(self, p1, p2):
         """ Subtract P2 from P1, i.e., P1 - P2 = P1 + (-P2). """
         return self.add(p1, self.neg(p2))
+
+    def mul(self, p1, m):
+        """ Multiply a point P1 with a constant m. """
+        p = p1
+        for i in range(m - 1):
+            p = self.add(p1, p)
+        
+        return p
