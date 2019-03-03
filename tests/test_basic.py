@@ -22,3 +22,10 @@ class TestBasic:
         i2 = ecc.ECPoint(1, 2, 1)
         assert (self.ec.add(i1, i2) == i1)
         assert (self.ec.add(i1, i2) == i2)
+
+        p1 = ecc.ECPoint(4, 1)
+        p2 = ecc.ECPoint(6, 6)
+        p3 = ecc.ECPoint(5, 0)
+        assert (self.ec.add(p1, p1) == p2)
+        assert (self.ec.add(p1, p2) == p3)
+        assert (self.ec.add(p2, p1) == p3)
