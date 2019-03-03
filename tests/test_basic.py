@@ -17,7 +17,7 @@ class TestBasic:
 
         assert (len(s) == 6)
 
-    def test_relations(self):
+    def test_add(self):
         i1 = ecc.ECPoint(0, 0, 1)
         i2 = ecc.ECPoint(1, 2, 1)
         assert (self.ec.add(i1, i2) == i1)
@@ -29,3 +29,9 @@ class TestBasic:
         assert (self.ec.add(p1, p1) == p2)
         assert (self.ec.add(p1, p2) == p3)
         assert (self.ec.add(p2, p1) == p3)
+
+    def test_mul(self):
+        p1 = ecc.ECPoint(4, 1)
+        assert (self.ec.mul(p1, 2) == self.ec.add(p1, p1))
+        # the order of P1 is 6
+        assert (self.ec.mul(p1, 7) == p1)
