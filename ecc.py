@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 
+from random import randint
+
 class ECPoint():
     
     def __init__(self, x, y, inf=0):
@@ -35,6 +37,19 @@ class EllipticCurve():
         self.a = a
         self.b = b
 
+    def identity(self):
+        """ Returns hte identity element. """
+        return ECPoint(0, 0, 1)
+
+    def is_valid(self, p):
+        """ Checks whether a point P is valid. """
+        return p.y**2  % self.p == (p.x**3 + self.a*p.x + self.b) % self.p
+
+    def random_point(self):
+        """ Generate a random point on the curve. """
+        m = randint(1, self.p)
+        return self.mul(self.g, m)
+
     def egcd(self, a, b):
         if a == 0:
             return (b, 0, 1)
@@ -53,7 +68,7 @@ class EllipticCurve():
         """ Adds two points P1 = (x1, y1) and P2 = (x2, y2) on the given curve. """
         # special case if one point is O (identity)
         if p1.inf == 1 and p2.inf == 1:
-            return ECPoint(0, 0, 1)
+            return self.identity()
         if p1.inf == 1:
             return p2
         if p2.inf == 1:
@@ -63,9 +78,9 @@ class EllipticCurve():
             lam = ((p2.y - p1.y) * self.modinv((p2.x - p1.x) % self.p, self.p)) % self.p
         else:
             if (p1 == self.neg(p2)):
-                return ECPoint(0, 0, 1)
+                return self.identity()
             if (p1.y == 0):
-                return ECPoint(0, 0, 1)
+                return self.identity()
             
             # point doubling
             lam = ((3*p1.x**2 + self.a) * self.modinv(2 * p1.y, self.p)) % self.p
@@ -85,7 +100,7 @@ class EllipticCurve():
 
     def mul(self, p, m):
         """ Multiply a point P with a constant m, using double-and-add. """
-        result = ECPoint(0, 0, 1)
+        result = self.identity()
         addend = p
 
         while m:
