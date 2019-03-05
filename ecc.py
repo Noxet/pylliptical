@@ -83,10 +83,17 @@ class EllipticCurve():
         """ Subtract P2 from P1, i.e., P1 - P2 = P1 + (-P2). """
         return self.add(p1, self.neg(p2))
 
-    def mul(self, p1, m):
-        """ Multiply a point P1 with a constant m. """
-        p = p1
-        for i in range(m - 1):
-            p = self.add(p1, p)
-        
-        return p
+    def mul(self, p, m):
+        """ Multiply a point P with a constant m, using double-and-add. """
+        result = ECPoint(0, 0, 1)
+        addend = p
+
+        while m:
+            if m & 1:
+                result = self.add(result, addend)
+
+            # double the point
+            addend = self.add(addend, addend)
+            m >>= 1
+
+        return result
