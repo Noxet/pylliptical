@@ -18,7 +18,8 @@ class ECPoint():
     def __repr__(self):
         if self.inf == 1:
             return 'O'
-        return '({}, {})'.format(self.x, self.y)
+        # print the compressed version
+        return '({}, {})'.format(self.x, self.y & 1)
 
     def __hash__(self):
         return hash(str(self))
@@ -46,9 +47,14 @@ class EllipticCurve():
         return p.y**2  % self.p == (p.x**3 + self.a*p.x + self.b) % self.p
 
     def random_point(self):
-        """ Generate a random point on the curve. """
+        """ Generate a random point (not identity) on the curve. """
         m = randint(1, self.p)
-        return self.mul(self.g, m)
+        p = self.mul(self.g, m)
+        while p == self.identity():
+            m = randint(1, self.p)
+            p = self.mul(self.g, m)
+
+        return p
 
     def egcd(self, a, b):
         if a == 0:
